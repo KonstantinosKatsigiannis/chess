@@ -41,8 +41,8 @@ Enter moves in the format `fromTo` where:
 ### Commands
 
 - `:h` - Display help message
-- `:s` - Save the current game
-- `:o` - Open (load) the previously saved game
+- `:s [filename]` - Save the current game to `filename.txt`
+- `:o [filename]` - Open (load) a previously saved game from `filename.txt`
 - `:x` - Exit the game
 
 ### Save/Load Feature
