@@ -14,7 +14,8 @@ A command-line chess game implementation in Java. This project provides a basic 
 ## Current Limitations
 
 - No implementation of special moves (castling, en passant, pawn promotion)
-- No checkmate or draw detection, game only ends via the `:x` command
+- No checkmate, stalemate or draw detection, game only ends via the `:x` command
+- The save/load function does not save or load all the moves, but saves and loads the board state instead. This means the previous moves are lost
 - Only one save file supported - game always loads from the last saved one
 
 ## How to Play
