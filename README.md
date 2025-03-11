@@ -76,10 +76,10 @@ Example: `e2e4` moves the piece at e2 to e4
 
 1. Compile the project:
 ```bash
-javac assignment/*.java assignment/*/*.java
+javac src/main/java/assignment/*.java src/main/java/assignment/Model/*.java src/main/java/assignment/Pieces/*.java src/main/java/assignment/Exceptions/*.java
 ```
 
-2. Run the game:
+2. Run the game (from the project root directory):
 ```bash
-java assignment.Main
+java -cp src/main/java assignment.Main
 ```
