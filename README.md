@@ -74,6 +74,8 @@ Example: `e2e4` moves the piece at e2 to e4
 
 ## How to Run
 
+Run via an IDE like IntelliJ IDEA, or follow these steps from the command line.
+
 1. Compile the project:
 ```bash
 javac src/main/java/assignment/*.java src/main/java/assignment/Model/*.java src/main/java/assignment/Pieces/*.java src/main/java/assignment/Exceptions/*.java
