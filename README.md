@@ -67,6 +67,21 @@ Enter moves in the format `fromTo` where:
     - `chess_game.txt` - The last saved board configuration, used to load the game again. File can be easily edited.
 - `Game.java` - Main game logic and user interface
 
+## Documentation
+
+The project includes comprehensive Javadoc documentation for all classes and methods. You can:
+
+1. View the documentation directly in the source code
+2. Generate HTML documentation from scratch, or use the already generated documentation in the `doc` directory
+3. Open `doc/index.html` in your web browser to browse the generated documentation
+
+The documentation covers:
+- Detailed class descriptions
+- Method parameters and return values
+- Exception conditions
+- Usage examples for game commands
+- Implementation notes for special chess rules (or rules not implemented)
+
 ## Requirements
 
 - Java Development Kit (JDK) 17 or higher
@@ -74,7 +89,7 @@ Enter moves in the format `fromTo` where:
 
 ## How to Run
 
-Run via an IDE like IntelliJ IDEA, or follow these steps from the command line.
+Run `Main.java` via an IDE like IntelliJ IDEA, or follow these steps from the command line.
 
 1. Compile the project:
 ```bash
