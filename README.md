@@ -16,7 +16,6 @@ A command-line chess game implementation in Java. This project provides a basic 
 - No implementation of special moves (castling, en passant, pawn promotion)
 - No checkmate, stalemate or draw detection, game only ends via the `:x` command
 - The save/load function does not save or load all the moves, but saves and loads the board state instead. This means the previous moves are lost
-- Only one save file supported - game always loads from the last saved one
 
 ## How to Play
 
@@ -48,10 +47,9 @@ Enter moves in the format `fromTo` where:
 
 ### Save/Load Feature
 
-- Games are saved to `src/main/java/assignment/Saved Games/chess_game.txt`
-- The file is in a format that easy to read and edit, so users can create a board state by simply editing it.
-- Only one save file is supported
-- Save your game before exiting using the `:s` command, otherwise it will be lost
+- Games are saved to `src/main/java/assignment/Saved Games/`
+- The file is in a `.txt` format that easy to read and edit, so users can create a board state by simply editing it.
+- Save your game before exiting using the `:s [filename]` command, otherwise it will be lost
 
 ## Project Structure
 
@@ -65,7 +63,7 @@ Enter moves in the format `fromTo` where:
 - `Exceptions/`
     - Custom exceptions for invalid moves and locations
 - `Saved Games/`
-    - `chess_game.txt` - The last saved board configuration, used to load the game again. File can be easily edited.
+    - `[filename].txt` - A saved board configuration, used to load the game again. File can be easily edited.
 - `Game.java` - Main game logic and user interface
 
 ## Documentation

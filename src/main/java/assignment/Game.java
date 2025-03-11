@@ -24,7 +24,7 @@ public class Game {
     private Board board;
     private Color currentPlayer;
     private final Scanner scanner;
-    private static final String SAVE_FILE = "src/main/java/assignment/Saved Games/chess_game.txt";
+    private static final String SAVE_DIRECTORY = "src/main/java/assignment/Saved Games/";
 
     /**
      * Creates a new chess game with standard initial setup.
@@ -68,23 +68,35 @@ public class Game {
      * Available commands:
      * <ul>
      *     <li>:h - Display help information</li>
-     *     <li>:s - Save the current game state</li>
-     *     <li>:o - Open (load) a previously saved game</li>
+     *     <li>:s [filename] - Save the current game to specified file</li>
+     *     <li>:o [filename] - Open (load) a previously saved game from specified file</li>
      *     <li>:x - Exit the game (with confirmation)</li>
      * </ul>
      *
      * @param command the command to process (must start with ':')
      */
     private void handleCommand(String command) {
-        switch (command.toLowerCase()) {
+        String[] parts = command.toLowerCase().split("\\s+", 2);
+        String cmd = parts[0];
+        String filename = parts.length > 1 ? parts[1].trim() : null;
+
+        switch (cmd) {
             case ":h":
                 printHelp();
                 break;
             case ":s":
-                saveGame();
+                if (filename == null) {
+                    System.out.println("Please provide a filename to save the game (e.g., :s mygame)");
+                    return;
+                }
+                saveGame(filename + ".txt");
                 break;
             case ":o":
-                openGame();
+                if (filename == null) {
+                    System.out.println("Please provide a filename to load the game (e.g., :o mygame)");
+                    return;
+                }
+                openGame(filename + ".txt");
                 break;
             case ":x":
                 if (exitGame()) {
@@ -139,47 +151,68 @@ public class Game {
     }
 
     /**
-     * Saves the current game state to a file.
+     * Saves the current game state to a specified file.
      * The save format includes:
      * <ul>
      *     <li>The current player's turn</li>
      *     <li>The position and type of each piece on the board</li>
      * </ul>
+     * 
+     * @param filename the name of the file to save the game to
      */
-    public void saveGame() { //current implementation only allows for one saved game, and always loads from that
-        try (PrintWriter writer = new PrintWriter(new FileWriter(SAVE_FILE))) {
-            //first line in the saved file is the current player's turn
-            writer.println(currentPlayer.name());
-            //save board state for all pieces
-            for (int i = 0; i < 8; i++) {
-                for (int j = 0; j < 8; j++) {
-                    Location loc = new Location(i, j);
-                    Piece piece = board.getPieceAt(loc);
-                    if (piece != null) {
-                        writer.println(i + "," + j + "," + piece.getClass().getSimpleName() + "," + piece.getColor());
+    public void saveGame(String filename) {
+        String fullPath = SAVE_DIRECTORY + filename;
+        try {
+            // Create the directory if it doesn't exist
+            new File(SAVE_DIRECTORY).mkdirs();
+            
+            try (PrintWriter writer = new PrintWriter(new FileWriter(fullPath))) {
+                //first line in the saved file is the current player's turn
+                writer.println(currentPlayer.name());
+                //save board state
+                for (int i = 0; i < 8; i++) {
+                    for (int j = 0; j < 8; j++) {
+                        Location loc = new Location(i, j);
+                        Piece piece = board.getPieceAt(loc);
+                        //write empty for null pieces, otherwise write piece info
+                        if (piece == null) {
+                            writer.println(i + "," + j + ",empty,none");
+                        } else {
+                            writer.println(i + "," + j + "," + piece.getClass().getSimpleName() + "," + piece.getColor());
+                        }
                     }
                 }
+                System.out.println("Game saved successfully to " + filename);
             }
-            System.out.println("Game saved successfully.");
         } catch (IOException | InvalidLocationException e) {
             System.out.println("Error saving game: " + e.getMessage());
         }
     }
 
     /**
-     * Loads a previously saved game state from a file.
+     * Loads a previously saved game state from a specified file.
      * Restores:
      * <ul>
      *     <li>The current player's turn</li>
      *     <li>All pieces and their positions on the board</li>
      * </ul>
+     * 
+     * @param filename the name of the file to load the game from
      */
-    public void openGame() { //current implementation always loads from the one available file, user cannot choose
-        try (BufferedReader reader = new BufferedReader(new FileReader(SAVE_FILE))) {
+    public void openGame(String filename) {
+        String fullPath = SAVE_DIRECTORY + filename;
+        File saveFile = new File(fullPath);
+        
+        if (!saveFile.exists()) {
+            System.out.println("Save file '" + filename + "' not found!");
+            return;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(saveFile))) {
             String colorLine = reader.readLine();
             if (colorLine != null) {
                 currentPlayer = Color.valueOf(colorLine);
-                board = new Board(); //create an empty board
+                board = new Board(); // Create an empty board
                 
                 String line;
                 while ((line = reader.readLine()) != null) { //populate the board with the saved piece positions
@@ -188,16 +221,21 @@ public class Game {
                         int row = Integer.parseInt(parts[0]);
                         int col = Integer.parseInt(parts[1]);
                         String pieceType = parts[2];
-                        Color pieceColor = Color.valueOf(parts[3]);
-                        
                         Location loc = new Location(row, col);
-                        Piece piece = createPiece(pieceType, pieceColor, loc);
-                        if (piece != null) {
-                            board.setPiece(loc, piece);
+                        
+                        // Handle empty squares explicitly
+                        if (pieceType.equals("empty")) {
+                            board.setPiece(loc, null);
+                        } else {
+                            Color pieceColor = Color.valueOf(parts[3]);
+                            Piece piece = createPiece(pieceType, pieceColor, loc);
+                            if (piece != null) {
+                                board.setPiece(loc, piece);
+                            }
                         }
                     }
                 }
-                System.out.println("Game loaded successfully.");
+                System.out.println("Game loaded successfully from " + filename);
             }
         } catch (IOException | InvalidLocationException e) {
             System.out.println("Error loading game: " + e.getMessage());
@@ -241,8 +279,8 @@ public class Game {
     public void printHelp() {
         System.out.println("Available commands:");
         System.out.println(":h - Show this help message");
-        System.out.println(":s - Save the current game");
-        System.out.println(":o - Open the previously saved game");
+        System.out.println(":s [filename] - Save the current game (e.g., :s mygame)");
+        System.out.println(":o [filename] - Open a saved game (e.g., :o mygame)");
         System.out.println(":x - Exit the game");
         System.out.println("\nMove format: 'e2e4' (from square to square). En passant, castling, and promotion are not implemented yet. No checks for a game winning scenario or draw are implemented yet, the user needs to exit the game manually.");
     }
