@@ -6,11 +6,40 @@ import assignment.Model.Location;
 import assignment.Exceptions.InvalidMoveException;
 import assignment.Exceptions.InvalidLocationException;
 
+/**
+ * Represents a Pawn chess piece.
+ * Pawns have the most complex movement rules:
+ * - They can only move forward (direction depends on color)
+ * - They can move one square forward to an empty square
+ * - On their first move, they can optionally move two squares forward
+ * - They can only capture diagonally
+ * Note: En passant and promotion are not implemented in this version.
+ */
 public class Pawn extends Piece {
+    /**
+     * Creates a new Pawn.
+     *
+     * @param color the color of the pawn (WHITE or BLACK)
+     * @param location the initial position of the pawn
+     * @param board the chess board this pawn belongs to
+     */
     public Pawn(Color color, Location location, Board board) {
         super(color, location, board);
     }
 
+    /**
+     * Attempts to move this pawn to a new location.
+     * The move is valid if one of these conditions is met:
+     * <ul>
+     *     <li>Moving one square forward to an empty square</li>
+     *     <li>Moving two squares forward from starting position to an empty square, with no pieces in between</li>
+     *     <li>Moving one square diagonally forward to capture an opponent's piece</li>
+     * </ul>
+     * Note: En passant and promotion are not implemented in this version.
+     *
+     * @param newLoc the destination location
+     * @throws InvalidMoveException if the move violates any of the above rules
+     */
     @Override
     public void moveTo(Location newLoc) throws InvalidMoveException {
         int rowDiff = newLoc.getRow() - location.getRow();
@@ -64,6 +93,12 @@ public class Pawn extends Piece {
         throw new InvalidMoveException("Invalid pawn move. Pawns only move forwards. They can move 2 squares if they have not moved before, else they can only move one step. They can only capture enemy pieces diagonally, if they are one square away, and not if they are in front of them. En passant and promotion are not implemented yet.");
     }
 
+    /**
+     * Returns a string representation of this pawn.
+     * 'P' for white pawn, 'p' for black pawn.
+     *
+     * @return "P" for white pawn, "p" for black pawn
+     */
     @Override
     public String toString() {
         return color == Color.WHITE ? "P" : "p";

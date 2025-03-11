@@ -5,12 +5,38 @@ import assignment.Model.Color;
 import assignment.Model.Location;
 import assignment.Exceptions.InvalidMoveException;
 
+/**
+ * Represents a Rook chess piece.
+ * A rook can move any number of squares horizontally or vertically,
+ * as long as the path is not blocked by other pieces.
+ * Note: Castling is not implemented in this version.
+ */
 @SuppressWarnings("Duplicates")
 public class Rook extends Piece {
+    /**
+     * Creates a new Rook.
+     *
+     * @param color the color of the rook (WHITE or BLACK)
+     * @param location the initial position of the rook
+     * @param board the chess board this rook belongs to
+     */
     public Rook(Color color, Location location, Board board) {
         super(color, location, board);
     }
 
+    /**
+     * Attempts to move this rook to a new location.
+     * The move is valid if:
+     * <ul>
+     *     <li>The destination is on the same row or column as the current position</li>
+     *     <li>The path to the destination is not blocked by other pieces</li>
+     *     <li>The destination is either empty or contains an opponent's piece</li>
+     * </ul>
+     * Note: Castling is not implemented in this version.
+     *
+     * @param newLoc the destination location
+     * @throws InvalidMoveException if the move violates any of the above rules
+     */
     @Override
     public void moveTo(Location newLoc) throws InvalidMoveException {
         //first case deals with horizontal movement
@@ -49,6 +75,12 @@ public class Rook extends Piece {
         throw new InvalidMoveException("Rook can only move horizontally or vertically. Castling is not implemented yet.");
     }
 
+    /**
+     * Returns a string representation of this rook.
+     * 'R' for white rook, 'r' for black rook.
+     *
+     * @return "R" for white rook, "r" for black rook
+     */
     @Override
     public String toString() {
         return color == Color.WHITE ? "R" : "r";

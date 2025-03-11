@@ -2,16 +2,31 @@ package assignment.Model;
 
 import assignment.Pieces.*;
 import assignment.Exceptions.InvalidLocationException;
-import java.io.Serializable;
 
-public class Board implements Serializable {
+/**
+ * Represents a chess board and manages the placement and movement of pieces.
+ * The board is represented as an 8x8 grid where each cell can contain a chess piece.
+ * This class provides methods for initializing the board, moving pieces, and checking
+ * if paths between locations are clear.
+ */
+public class Board {
+    /** The 8x8 grid representing the chess board, where each cell can contain a piece */
     private final Piece[][] pieces;
 
+    /**
+     * Creates a new chess board and initializes it with pieces in their starting positions.
+     */
     public Board() {
         pieces = new Piece[8][8];
         init();
     }
 
+    /**
+     * Initializes the chess board with all pieces in their standard starting positions.
+     * White pieces are placed on ranks 1-2, black pieces on ranks 7-8.
+     * The order from left to right is: Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook.
+     * Pawns occupy the second rank for white and seventh rank for black.
+     */
     public void init() {
         try {
             // Initialize pawns
@@ -51,10 +66,23 @@ public class Board implements Serializable {
         }
     } //initializes the board state
 
+    /**
+     * Gets the piece at the specified location on the board.
+     *
+     * @param loc the location to check
+     * @return the piece at the specified location, or null if the location is empty
+     */
     public Piece getPieceAt(Location loc) {
         return pieces[loc.getRow()][loc.getColumn()];
     } //returns the piece in loc
 
+    /**
+     * Moves a piece from one location to another, assuming the move is valid.
+     * The destination square must be empty.
+     *
+     * @param from the starting location of the piece
+     * @param to the destination location
+     */
     public void movePiece(Location from, Location to) {
         Piece piece = pieces[from.getRow()][from.getColumn()];
         pieces[from.getRow()][from.getColumn()] = null;
@@ -62,6 +90,13 @@ public class Board implements Serializable {
         piece.setLocation(to);
     } //move validity already checked, this just moves the piece and leaves nothing behind
 
+    /**
+     * Moves a piece from one location to another, capturing any piece at the destination.
+     * Similar to movePiece, but used when capturing an opponent's piece.
+     *
+     * @param from the starting location of the piece
+     * @param to the destination location where an opponent's piece will be captured
+     */
     public void movePieceCapturing(Location from, Location to) {
         Piece piece = pieces[from.getRow()][from.getColumn()];
         pieces[from.getRow()][from.getColumn()] = null;
@@ -69,10 +104,25 @@ public class Board implements Serializable {
         piece.setLocation(to);
     } //same as the previous one, but with an opponent's piece at 'to'
 
+    /**
+     * Sets a piece at a specific location on the board.
+     * Used primarily when loading a game from a file.
+     *
+     * @param location the location where to place the piece
+     * @param piece the piece to place
+     */
     public void setPiece(Location location, Piece piece) {
         pieces[location.getRow()][location.getColumn()] = piece;
     } //this one is only used when loading a game from a file, to set the pieces according to the saved board state
 
+    /**
+     * Checks if there are any pieces between two locations horizontally.
+     * Used for validating rook and queen moves.
+     *
+     * @param from the starting location
+     * @param to the ending location
+     * @return true if the horizontal path is clear, false otherwise
+     */
     public boolean freeHorizontalPath(Location from, Location to) {
         if (from.getRow() != to.getRow()) return false;
         
@@ -86,6 +136,14 @@ public class Board implements Serializable {
         return true;
     } //checks if horizontal path is free, used for rook and queen
 
+    /**
+     * Checks if there are any pieces between two locations vertically.
+     * Used for validating rook and queen moves.
+     *
+     * @param from the starting location
+     * @param to the ending location
+     * @return true if the vertical path is clear, false otherwise
+     */
     public boolean freeVerticalPath(Location from, Location to) {
         if (from.getColumn() != to.getColumn()) return false;
         
@@ -99,6 +157,15 @@ public class Board implements Serializable {
         return true;
     } //same as the previous one but for vertical path, used for rook and queen
 
+    /**
+     * Checks if there are any pieces between two locations diagonally.
+     * Used for validating bishop and queen moves.
+     * This method handles both diagonal directions (/ and \).
+     *
+     * @param from the starting location
+     * @param to the ending location
+     * @return true if the diagonal path is clear, false otherwise
+     */
     public boolean freeDiagonalPath(Location from, Location to) { // no need for freeAntidiagonalPath, this already checks both directions
         int rowDiff = to.getRow() - from.getRow();
         int colDiff = to.getColumn() - from.getColumn();
@@ -119,6 +186,14 @@ public class Board implements Serializable {
         return true;
     } //same as the previous ones but for diagonal (and antidiagonal) paths, used for queen and bishop
 
+    /**
+     * Returns a string representation of the current board state.
+     * The board is displayed with ranks 8-1 from top to bottom and files a-h from left to right.
+     * White pieces are represented by uppercase letters, black pieces by lowercase letters.
+     * Empty squares are represented by dots.
+     *
+     * @return a string representation of the board
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -141,8 +216,10 @@ public class Board implements Serializable {
         return sb.toString();
     } //returns the board state that is printed for the user
 
+    /**
+     * Displays the current board state to the console.
+     */
     public void display() {
         System.out.println(this);
     }
-
 }

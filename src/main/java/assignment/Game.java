@@ -9,18 +9,43 @@ import assignment.Exceptions.InvalidLocationException;
 import java.io.*;
 import java.util.Scanner;
 
+/**
+ * Controls the flow of a chess game.
+ * This class manages:
+ * <ul>
+ *     <li>The game board and its state</li>
+ *     <li>Player turns (alternating between white and black)</li>
+ *     <li>Move validation and execution</li>
+ *     <li>Game commands (help, save, load, exit)</li>
+ * </ul>
+ * Note: Checkmate, stalemate, and draw conditions are not implemented in this version.
+ */
 public class Game {
     private Board board;
     private Color currentPlayer;
     private final Scanner scanner;
     private static final String SAVE_FILE = "src/main/java/assignment/Saved Games/chess_game.txt";
 
+    /**
+     * Creates a new chess game with standard initial setup.
+     * White player moves first, as per chess rules.
+     */
     public Game() {
         board = new Board();
         currentPlayer = Color.WHITE; //white always starts first, apparently for historical reasons and not racism
         scanner = new Scanner(System.in);
     }
 
+    /**
+     * Starts and runs the main game loop.
+     * The loop continues until the user explicitly exits using the ':x' command.
+     * Each iteration:
+     * <ul>
+     *     <li>Displays the current board state</li>
+     *     <li>Shows whose turn it is</li>
+     *     <li>Processes user input (either a move or a command)</li>
+     * </ul>
+     */
     //Checkmate or draw checks are not implemented, game only stops if the user stops it
     @SuppressWarnings("InfiniteLoopStatement")
     public void play() {
@@ -38,6 +63,18 @@ public class Game {
         }
     }
 
+    /**
+     * Processes game commands that start with ':'.
+     * Available commands:
+     * <ul>
+     *     <li>:h - Display help information</li>
+     *     <li>:s - Save the current game state</li>
+     *     <li>:o - Open (load) a previously saved game</li>
+     *     <li>:x - Exit the game (with confirmation)</li>
+     * </ul>
+     *
+     * @param command the command to process (must start with ':')
+     */
     private void handleCommand(String command) {
         switch (command.toLowerCase()) {
             case ":h":
@@ -59,6 +96,19 @@ public class Game {
         }
     }
 
+    /**
+     * Processes a move input from the user.
+     * The move must be in the format "e2e4" (source square followed by destination square).
+     * Validates that:
+     * <ul>
+     *     <li>The input format is correct</li>
+     *     <li>There is a piece at the source location</li>
+     *     <li>The piece belongs to the current player</li>
+     *     <li>The move is valid according to chess rules</li>
+     * </ul>
+     *
+     * @param moveString the move in chess notation (e.g., "e2e4")
+     */
     public void handleMove(String moveString) {
         try {
             if (moveString.length() != 4) {
@@ -88,6 +138,14 @@ public class Game {
         }
     }
 
+    /**
+     * Saves the current game state to a file.
+     * The save format includes:
+     * <ul>
+     *     <li>The current player's turn</li>
+     *     <li>The position and type of each piece on the board</li>
+     * </ul>
+     */
     public void saveGame() { //current implementation only allows for one saved game, and always loads from that
         try (PrintWriter writer = new PrintWriter(new FileWriter(SAVE_FILE))) {
             //first line in the saved file is the current player's turn
@@ -108,6 +166,14 @@ public class Game {
         }
     }
 
+    /**
+     * Loads a previously saved game state from a file.
+     * Restores:
+     * <ul>
+     *     <li>The current player's turn</li>
+     *     <li>All pieces and their positions on the board</li>
+     * </ul>
+     */
     public void openGame() { //current implementation always loads from the one available file, user cannot choose
         try (BufferedReader reader = new BufferedReader(new FileReader(SAVE_FILE))) {
             String colorLine = reader.readLine();
@@ -138,6 +204,14 @@ public class Game {
         }
     }
 
+    /**
+     * Creates a new chess piece of the specified type.
+     *
+     * @param type the type of piece to create (Pawn, Rook, Knight, Bishop, Queen, or King)
+     * @param color the color of the piece
+     * @param location the location where the piece should be placed
+     * @return the created piece, or null if the piece type is invalid
+     */
     private Piece createPiece(String type, Color color, Location location) {
         return switch (type) {
             case "Pawn" -> new Pawn(color, location, board);
@@ -150,12 +224,20 @@ public class Game {
         };
     }
 
+    /**
+     * Prompts the user for confirmation before exiting the game.
+     *
+     * @return true if the user confirms they want to exit, false otherwise
+     */
     public boolean exitGame() {
         System.out.print("Are you sure you want to exit? Make sure to save your game before exiting. (y/n): ");
         String response = scanner.nextLine().trim().toLowerCase();
         return response.equals("y");
     }
 
+    /**
+     * Displays help information about available commands and game rules.
+     */
     public void printHelp() {
         System.out.println("Available commands:");
         System.out.println(":h - Show this help message");
