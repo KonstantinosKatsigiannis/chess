@@ -13,7 +13,7 @@ public class Game {
     private Board board;
     private Color currentPlayer;
     private final Scanner scanner;
-    private static final String SAVE_FILE = "chess_game.txt";
+    private static final String SAVE_FILE = "src/main/java/assignment/Saved Games/chess_game.txt";
 
     public Game() {
         board = new Board();
